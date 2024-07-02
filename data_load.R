@@ -21,4 +21,5 @@ lung_filtered <- lung_combined %>%
   distinct(patient_id, .keep_all = TRUE) %>% 
   left_join(lung_combined[ , c("image_id" , "slide_id", "x", "y", "pheno", "gender", "mhcII_status", "age_at_diagnosis", "stage_numeric", "pack_years", "survival_days", "cause_of_death", "adjuvant_therapy", "time_to_recurrence_days", "recurrence_or_lung_ca_death")], by = "image_id")
 
+unique(lung_filtered$image_id)
 ## Calculating K and K cross
