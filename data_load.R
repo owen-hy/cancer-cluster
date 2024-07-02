@@ -10,3 +10,5 @@ lung_meta <- lungData$lung_metadata
 ovarianData <- read_rds("./ovarianData.RDS")
 ovarian_cell <- ovarianData$ovarian_cells
 ovarian_meta <- ovarianData$ovarian_metadata
+
+## Calculating K and K cross
