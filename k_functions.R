@@ -61,9 +61,9 @@ for(i in 1:nrow(lung_meta)){
   if(lung_meta$p_CK[i] > 0){
     # k function estimated for image i tumor cells using isotropic correction
     kEstCK_temp <- permute.envelope(pppObj, fun = Kest, funargs = list(i = "CK", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CK[i] <- (kEstCK_temp$obs - kEstCK_temp$mmean)[
-      which.min(abs(kEstCK_temp$r - 40))]
+      which.min(abs(kEstCK_temp$r - 30))]
   }
   else{
     # if there are no tumor cells, record NA for this image's k function
@@ -74,7 +74,7 @@ for(i in 1:nrow(lung_meta)){
   if(lung_meta$p_CD8[i] > 0){
     kEstCD8_temp <- permute.envelope(pppObj, fun = Kest, funargs = list(i = "CD8", correction = "isotropic"))
     lung_meta$k_CD8[i] <- (kEstCD8_temp$obs - kEstCD8_temp$mmean)[
-      which.min(abs(kEstCD8_temp$r - 40))]
+      which.min(abs(kEstCD8_temp$r - 30))]
   }
   else{
     lung_meta$k_CD8[i] <- NA
@@ -84,7 +84,7 @@ for(i in 1:nrow(lung_meta)){
   if(lung_meta$p_CD14[i] > 0){
     kEstCD14_temp <- permute.envelope(pppObj, fun = Kest, funargs = list(i = "CD14", correction = "isotropic"))
     lung_meta$k_CD14[i] <- (kEstCD14_temp$obs - kEstCD14_temp$mmean)[
-      which.min(abs(kEstCD14_temp$r - 40))]
+      which.min(abs(kEstCD14_temp$r - 30))]
   }
   else{
     lung_meta$k_CD14[i] <- NA
@@ -94,7 +94,7 @@ for(i in 1:nrow(lung_meta)){
   if(lung_meta$p_Other[i] > 0){
     kEstOther_temp <- permute.envelope(pppObj, fun = Kest, funargs = list(i = "Other", correction = "isotropic"))
     lung_meta$k_Other[i] <- (kEstOther_temp$obs - kEstOther_temp$mmean)[
-      which.min(abs(kEstOther_temp$r - 40))]
+      which.min(abs(kEstOther_temp$r - 30))]
   }
   else{
     lung_meta$k_Other[i] <- NA
@@ -104,9 +104,9 @@ for(i in 1:nrow(lung_meta)){
   if(lung_meta$p_CD19[i] > 0){
     # k function estimated for image i B cells using isotropic correction
     kEstCD19_temp <- MItools::permute.envelope(pppObj, fun = Kest, funargs = list(i = "CD19", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CD19[i] <- (kEstCD19_temp$obs - kEstCD19_temp$mmean)[
-      which.min(abs(kEstCD19_temp$r - 40))]
+      which.min(abs(kEstCD19_temp$r - 30))]
   }
   else{
     lung_meta$k_CD19[i] <- NA
@@ -116,7 +116,7 @@ for(i in 1:nrow(lung_meta)){
   if(lung_meta$p_CD4[i] > 0){
     kEstCD4_temp <- permute.envelope(pppObj, fun = Kest, funargs = list(i = "CD4", correction = "isotropic"))
     lung_meta$k_CD4[i] <- (kEstCD4_temp$obs - kEstCD4_temp$mmean)[
-      which.min(abs(kEstCD4_temp$r - 40))]
+      which.min(abs(kEstCD4_temp$r - 30))]
   }
   else{
     lung_meta$k_CD14[i] <- NA
@@ -126,9 +126,9 @@ for(i in 1:nrow(lung_meta)){
   # # CK x CD8
   if(lung_meta$p_CD8[i] > 0 & lung_meta$p_CK[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CK", j = "CD8", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CK_CD8[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CK_CD8[i] <- NA
@@ -137,9 +137,9 @@ for(i in 1:nrow(lung_meta)){
   # CK x CD14
   if(lung_meta$p_CD14[i] > 0 & lung_meta$p_CK[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CK", j = "CD14", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CK_CD14[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CK_CD14[i] <- NA
@@ -148,9 +148,9 @@ for(i in 1:nrow(lung_meta)){
   # CK x Other
   if(lung_meta$p_Other[i] > 0 & lung_meta$p_CK[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CK", j = "Other", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CK_Other[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CK_Other[i] <- NA
@@ -160,9 +160,9 @@ for(i in 1:nrow(lung_meta)){
   if(lung_meta$p_CD19[i] > 0 & lung_meta$p_CK[i] > 0){
     # k function estimated for image i B cells using isotropic correction
     kCross_temp <- MItools::permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CK", j = "CD19", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CK_CD19[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))
+      which.min(abs(kCross_temp$r - 30))
     ]
   }
   else{
@@ -173,9 +173,9 @@ for(i in 1:nrow(lung_meta)){
   # CK x CD4
   if(lung_meta$p_CD4[i] > 0 & lung_meta$p_CK[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CK", j = "CD4", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CK_CD4[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CK_CD4[i] <- NA
@@ -184,9 +184,9 @@ for(i in 1:nrow(lung_meta)){
   # CD8 x CD14
   if(lung_meta$p_CD8[i] > 0 & lung_meta$p_CD14[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CD14", j = "CD8", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CD8_CD14[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CD8_CD14[i] <- NA
@@ -195,9 +195,9 @@ for(i in 1:nrow(lung_meta)){
   # CD8 x Other
   if(lung_meta$p_CD8[i] > 0 & lung_meta$p_Other[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "Other", j = "CD8", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CD8_Other[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CD8_Other[i] <- NA
@@ -206,9 +206,9 @@ for(i in 1:nrow(lung_meta)){
   # CD8 x CD19
   if(lung_meta$p_CD8[i] > 0 & lung_meta$p_CD19[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CD19", j = "CD8", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CD8_CD19[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CD8_CD19[i] <- NA
@@ -217,9 +217,9 @@ for(i in 1:nrow(lung_meta)){
   # CD8 x CD4
   if(lung_meta$p_CD8[i] > 0 & lung_meta$p_CD4[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CD4", j = "CD8", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CD8_CD4[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CD8_CD4[i] <- NA
@@ -228,9 +228,9 @@ for(i in 1:nrow(lung_meta)){
   # CD14 x Other
   if(lung_meta$p_Other[i] > 0 & lung_meta$p_CD14[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CD14", j = "Other", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CD14_Other[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CD14_Other[i] <- NA
@@ -239,9 +239,9 @@ for(i in 1:nrow(lung_meta)){
   # CD14 x CD19
   if(lung_meta$p_CD19[i] > 0 & lung_meta$p_CD14[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CD14", j = "CD19", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CD14_CD19[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CD14_CD19[i] <- NA
@@ -250,9 +250,9 @@ for(i in 1:nrow(lung_meta)){
   # CD14 x CD4
   if(lung_meta$p_CD4[i] > 0 & lung_meta$p_CD14[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CD14", j = "CD4", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CD14_CD4[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CD14_CD4[i] <- NA
@@ -261,9 +261,9 @@ for(i in 1:nrow(lung_meta)){
   # Other x CD19
   if(lung_meta$p_CD19[i] > 0 & lung_meta$p_Other[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CD19", j = "Other", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_Other_CD19[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_Other_CD19[i] <- NA
@@ -272,9 +272,9 @@ for(i in 1:nrow(lung_meta)){
   # Other x CD4
   if(lung_meta$p_CD4[i] > 0 & lung_meta$p_Other[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CD4", j = "Other", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_Other_CD4[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_Other_CD4[i] <- NA
@@ -283,9 +283,9 @@ for(i in 1:nrow(lung_meta)){
   # CD19 x CD4
   if(lung_meta$p_CD4[i] > 0 & lung_meta$p_CD19[i] > 0){
     kCross_temp <- permute.envelope(pppObj, fun = Kcross, funargs = list(i = "CD4", j = "CD19", correction = "isotropic"))
-    # get difference between estimate and theoretical value at radius of 40 microns
+    # get difference between estimate and theoretical value at radius of 30 microns
     lung_meta$k_CD19_CD4[i] <- (kCross_temp$obs - kCross_temp$mmean)[
-      which.min(abs(kCross_temp$r - 40))]
+      which.min(abs(kCross_temp$r - 30))]
   }
   else{
     lung_meta$k_CD19_CD4[i] <- NA
@@ -293,6 +293,6 @@ for(i in 1:nrow(lung_meta)){
 }
 
 # filtering to only include images with most number of cells per patient
-lung_meta <- lung_meta |>
+lung_meta30 <- lung_meta |>
   filter(image_id %in% lung_filtered$image_id)
   
