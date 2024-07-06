@@ -1,4 +1,5 @@
 library(tidyverse)
+#devtools::install_github("junsoukchoi/MItools")
 library(MItools)
 
 ovarianData <- read_rds("./ovarianData.RDS")
@@ -146,7 +147,7 @@ for(i in 1:nrow(ovarian_meta)){
       which.min(abs(kCross_temp$r - micron))]
   }
   else{
-    ovarian_meta$k_Other_B Cell[i] <- NA
+    ovarian_meta$k_Other_BCell[i] <- NA
   }
   
   # Other x Macrophage
