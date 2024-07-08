@@ -1,5 +1,7 @@
 library(factoextra)
 
+lung_transform3 <- as.data.frame(-pca$x[,1:3])
+
 lung_transform <- as.data.frame(-pca$x[,1:8])
 
 fviz_nbclust(lung_transform, FUNcluster = kmeans, method = 'wss')

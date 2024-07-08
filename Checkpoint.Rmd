@@ -12,7 +12,7 @@ library(factoextra)
 library(patchwork)
 ```
 
-# Elbow Plots (Not Doing PCA First)
+# Determining Optimal Number of Cluster (Not Doing PCA First)
 
 Prepping Lung Data 
 ```{r lung data for elbows}
@@ -39,6 +39,7 @@ new_lung_meta20 = scale(new_lung_meta20)
 
 ```
 
+
 ```{r lung number clusters}
 # width sum of squares method (elbow plot)
 wss_lung = fviz_nbclust(new_lung_meta40, kmeans, method = "wss")
@@ -52,7 +53,9 @@ wss_lung + silhouette_lung + gap_stat_lung
 
 ```
 
+
 Now doing the same for the ovarian data:
+Prepping ovarian data 
 ```{r ova data for elbow}
 ovarian_meta40 <- read.csv("ovarian_meta40.csv")
 ovarian_meta30 <- read.csv("ovarian_meta30.csv")
@@ -73,6 +76,7 @@ new_ovarian_meta30 = scale(new_ovarian_meta30)
 new_ovarian_meta20 = scale(new_ovarian_meta20)
 ```
 
+
 ```{r ova number clusters}
 # width sum of squares method (elbow plot)
 wss_ova = fviz_nbclust(new_ovarian_meta40, kmeans, method = "wss")
@@ -85,3 +89,30 @@ gap_stat_ova = fviz_nbclust(new_ovarian_meta40, kmeans, method = "gap_stat")
 
 wss_ova + silhouette_ova + gap_stat_ova
 ```
+
+
+# Determining Optimal Number of Clusters (After PCA) 
+```{r lung number}
+# with 8 pcs 
+wss_pc8_lung = fviz_nbclust(lung_transform, kmeans, method = "wss")
+
+silhouette_pc8_lung = fviz_nbclust(lung_transform, kmeans, method = "silhouette")
+
+gap_stat_pc8_lung = fviz_nbclust(lung_transform, kmeans, method = "gap_stat")
+
+wss_pc8_lung + silhouette_pc8_lung + gap_stat_pc8_lung
+
+# with 3 pcs
+wss_pc3_lung = fviz_nbclust(lung_transform3, kmeans, method = "wss")
+
+silhouette_pc3_lung = fviz_nbclust(lung_transform3, kmeans, method = "silhouette")
+
+gap_stat_pc3_lung = fviz_nbclust(lung_transform3, kmeans, method = "gap_stat")
+
+wss_pc3_lung + silhouette_pc3_lung + gap_stat_pc3_lung
+```
+
+```{r ova number}
+
+```
+
