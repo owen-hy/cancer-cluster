@@ -3,24 +3,81 @@ library(ggplot2)
 library(factoextra)
 names(lung_meta)
 
+lung_meta40 <- read.csv("lung_meta40.csv")
+lung_meta30 <- read.csv("lung_meta30.csv")
+lung_meta20 <- read.csv("lung_meta20.csv")
+
+ovarian_meta40 <- read.csv("ovarian_meta40.csv")
+ovarian_meta30 <- read.csv("ovarian_meta30.csv")
+ovarian_meta20 <- read.csv("ovarian_meta20.csv")
+
 #removing all columns except the k-value ones 
-lung_meta2 = subset(lung_meta, select = -c(image_id, patient_id, gender, mhcII_status, age_at_diagnosis, stage_at_diagnosis, stage_numeric, pack_years, survival_days, survival_status, cause_of_death, adjuvant_therapy, time_to_recurrence_days, recurrence_or_lung_ca_death, totalCell) )
-View(lung_meta2)
+new_lung_meta40 = subset(lung_meta40, select = -c(image_id, patient_id, gender, mhcII_status, age_at_diagnosis, stage_at_diagnosis, stage_numeric, pack_years, survival_days, survival_status, cause_of_death, adjuvant_therapy, time_to_recurrence_days, recurrence_or_lung_ca_death, totalCell))
+
+new_lung_meta30 = subset(lung_meta30, select = -c(image_id, patient_id, gender, mhcII_status, age_at_diagnosis, stage_at_diagnosis, stage_numeric, pack_years, survival_days, survival_status, cause_of_death, adjuvant_therapy, time_to_recurrence_days, recurrence_or_lung_ca_death, totalCell))
+
+new_lung_meta20 = subset(lung_meta20, select = -c(image_id, patient_id, gender, mhcII_status, age_at_diagnosis, stage_at_diagnosis, stage_numeric, pack_years, survival_days, survival_status, cause_of_death, adjuvant_therapy, time_to_recurrence_days, recurrence_or_lung_ca_death, totalCell))
+
 # removing all the na entries 
-lung_meta2 = na.omit(lung_meta2)
+new_lung_meta40 = na.omit(new_lung_meta40)
+new_lung_meta30 = na.omit(new_lung_meta30)
+new_lung_meta20 = na.omit(new_lung_meta20)
+
 # scaling the data 
-lung_meta2 = scale(lung_meta2)
+new_lung_meta40 = scale(new_lung_meta40)
+new_lung_meta30 = scale(new_lung_meta30)
+new_lung_meta20 = scale(new_lung_meta20)
 
-
+# creating elbow plots
 n = 10 # max number of clusters to consider 
 wss = numeric(n) # the within-cluster sum of squares for each number of clusters   
 for (i in 1:n) {
-  km.out <- kmeans(lung_meta2, centers = i, nstart = 100)
+  km.out <- kmeans(new_lung_meta40, centers = i, nstart = 100)
   wss[i] <- km.out$tot.withinss
 }
+wss_df <- tibble(clusters = 1:n, wss = wss)
+scree_plot_lung40 <- ggplot(wss_df, aes(x = clusters, y = wss)) + geom_line() + geom_point() + scale_x_continuous(breaks=c(1:10)) + ggtitle("Elbow plot 40 microns for lung data")
+scree_plot_lung40
 
-k_mean_vals = kmeans(lung_meta2, centers = 5, nstart = 100)
-fviz_cluster(k_mean_vals, data = lung_meta2, 
+n = 10 
+wss = numeric(n) 
+for (i in 1:n) {
+  km.out <- kmeans(new_lung_meta30, centers = i, nstart = 100)
+  wss[i] <- km.out$tot.withinss
+}
+wss_df <- tibble(clusters = 1:n, wss = wss)
+scree_plot_lung30 <- ggplot(wss_df, aes(x = clusters, y = wss)) + geom_line() + geom_point() + scale_x_continuous(breaks=c(1:10)) + ggtitle("Elbow plot 30 microns for lung data")
+scree_plot_lung30
+
+
+n = 10 
+wss = numeric(n) 
+for (i in 1:n) {
+  km.out <- kmeans(new_lung_meta20, centers = i, nstart = 100)
+  wss[i] <- km.out$tot.withinss
+}
+wss_df <- tibble(clusters = 1:n, wss = wss)
+scree_plot_lung20 <- ggplot(wss_df, aes(x = clusters, y = wss)) + geom_line() + geom_point() + scale_x_continuous(breaks=c(1:10)) + ggtitle("Elbow plot 20 microns for lung data")
+scree_plot_lung20
+
+
+# visualizing clusters 
+k_mean_vals_40 = kmeans(new_lung_meta40, centers = 5, nstart = 100)
+fviz_cluster(k_mean_vals, data = new_lung_meta40, 
                geom = "point",
                ellipse.type = "convex", 
-               ggtheme = theme_bw())
+               ggtheme = theme_bw(), main = "Cluster plot 40 microns for lung")
+
+k_mean_vals_30 = kmeans(new_lung_meta30, centers = 5, nstart = 100)
+fviz_cluster(k_mean_vals, data = new_lung_meta30, 
+             geom = "point",
+             ellipse.type = "convex", 
+             ggtheme = theme_bw(), main = "Cluster plot 30 microns for lung")
+
+k_mean_vals_20 = kmeans(new_lung_meta20, centers = 5, nstart = 100)
+fviz_cluster(k_mean_vals, data = new_lung_meta20, 
+             geom = "point",
+             ellipse.type = "convex", 
+             ggtheme = theme_bw(), main = "Cluster plot 20 microns for lung")
+
+
