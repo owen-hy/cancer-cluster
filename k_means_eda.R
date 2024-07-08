@@ -1,6 +1,7 @@
 library(dplyr)
 library(ggplot2)
 library(factoextra)
+library(patchwork) #package to plot multiple graphs at the same time 
 names(lung_meta)
 
 lung_meta40 <- read.csv("lung_meta40.csv")
@@ -29,6 +30,7 @@ new_lung_meta30 = scale(new_lung_meta30)
 new_lung_meta20 = scale(new_lung_meta20)
 
 # creating elbow plots
+
 n = 10 # max number of clusters to consider 
 wss = numeric(n) # the within-cluster sum of squares for each number of clusters   
 for (i in 1:n) {
@@ -60,6 +62,7 @@ wss_df <- tibble(clusters = 1:n, wss = wss)
 scree_plot_lung20 <- ggplot(wss_df, aes(x = clusters, y = wss)) + geom_line() + geom_point() + scale_x_continuous(breaks=c(1:10)) + ggtitle("Elbow plot 20 microns for lung data")
 scree_plot_lung20
 
+scree_plot_lung40 + scree_plot_lung30 + scree_plot_lung20
 
 # visualizing clusters 
 k_mean_vals_40 = kmeans(new_lung_meta40, centers = 5, nstart = 100)
@@ -79,5 +82,58 @@ fviz_cluster(k_mean_vals, data = new_lung_meta20,
              geom = "point",
              ellipse.type = "convex", 
              ggtheme = theme_bw(), main = "Cluster plot 20 microns for lung")
+
+
+# now doing the same for ovarian data 
+names(ovarian_meta40)
+
+new_ovarian_meta40 = subset(ovarian_meta40, select = -c(sample_id, tma, diagnosis, primary, recurrent, treatment_effect, stage, grade, survival_time, death, BRCA_mutation, age_at_diagnosis, time_to_recurrence, parpi_inhibitor, debulking, totalCell, p_Other, p_Tumor, p_BCell, p_Macrophage, p_THelper, p_CytotoxicT))
+
+new_ovarian_meta30 = subset(ovarian_meta30, select = -c(sample_id, tma, diagnosis, primary, recurrent, treatment_effect, stage, grade, survival_time, death, BRCA_mutation, age_at_diagnosis, time_to_recurrence, parpi_inhibitor, debulking, totalCell, p_Other, p_Tumor, p_BCell, p_Macrophage, p_THelper, p_CytotoxicT))
+
+new_ovarian_meta20 = subset(ovarian_meta20, select = -c(sample_id, tma, diagnosis, primary, recurrent, treatment_effect, stage, grade, survival_time, death, BRCA_mutation, age_at_diagnosis, time_to_recurrence, parpi_inhibitor, debulking, totalCell, p_Other, p_Tumor, p_BCell, p_Macrophage, p_THelper, p_CytotoxicT))
+
+
+new_ovarian_meta40 = na.omit(new_ovarian_meta40)
+new_ovarian_meta30 = na.omit(new_ovarian_meta30)
+new_ovarian_meta20 = na.omit(new_ovarian_meta20)
+
+new_ovarian_meta40 = scale(new_ovarian_meta40)
+new_ovarian_meta30 = scale(new_ovarian_meta30)
+new_ovarian_meta20 = scale(new_ovarian_meta20)
+
+
+n = 10 
+wss = numeric(n)
+for (i in 1:n) {
+  km.out <- kmeans(new_ovarian_meta40, centers = i, nstart = 100)
+  wss[i] <- km.out$tot.withinss
+}
+wss_df <- tibble(clusters = 1:n, wss = wss)
+scree_plot_ovarian40 <- ggplot(wss_df, aes(x = clusters, y = wss)) + geom_line() + geom_point() + scale_x_continuous(breaks=c(1:10)) + ggtitle("Elbow plot 40 microns for ovarian data")
+scree_plot_ovarian40
+
+
+wss = numeric(n)
+for (i in 1:n) {
+  km.out <- kmeans(new_ovarian_meta30, centers = i, nstart = 100)
+  wss[i] <- km.out$tot.withinss
+}
+wss_df <- tibble(clusters = 1:n, wss = wss)
+scree_plot_ovarian30 <- ggplot(wss_df, aes(x = clusters, y = wss)) + geom_line() + geom_point() + scale_x_continuous(breaks=c(1:10)) + ggtitle("Elbow plot 30 microns for ovarian data")
+scree_plot_ovarian30
+
+
+wss = numeric(n)
+for (i in 1:n) {
+  km.out <- kmeans(new_ovarian_meta20, centers = i, nstart = 100)
+  wss[i] <- km.out$tot.withinss
+}
+wss_df <- tibble(clusters = 1:n, wss = wss)
+scree_plot_ovarian20 <- ggplot(wss_df, aes(x = clusters, y = wss)) + geom_line() + geom_point() + scale_x_continuous(breaks=c(1:10)) + ggtitle("Elbow plot 20 microns for ovarian data")
+scree_plot_ovarian20
+
+scree_plot_ovarian40 + scree_plot_ovarian30 + scree_plot_ovarian20
+
 
 
