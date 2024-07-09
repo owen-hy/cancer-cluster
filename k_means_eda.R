@@ -152,5 +152,3 @@ gap_stat_ova = fviz_nbclust(new_ovarian_meta40, kmeans, method = "gap_stat")
 
 wss_ova + silhouette_ova + gap_stat_ova
 
-
-

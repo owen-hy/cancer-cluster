@@ -1,7 +1,7 @@
-hclust(new_lung_meta40)
-View(new_lung_meta40)
-install.packages("clValid")
-library(clValid)
+# #hclust(new_lung_meta40)
+# #View(new_lung_meta40)
+# install.packages("clValid")
+# library(clValid)
 
 # creating distance matrix (method = euclidean) 
 distance_mat <- dist(new_lung_meta40)
