@@ -127,6 +127,7 @@ n = nrow(D)
 laplacian = ( diag(n) - diag(degrees^(-1/2)) %*% D %*% diag(degrees^(-1/2)) )
 # eigen(laplacian)
 
+# using eigengap to figure out ideal number of cluster
 which.max(diff(sort(eigen(laplacian)$values, decreasing = F))) + 1
 
 
