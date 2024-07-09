@@ -10,36 +10,27 @@ library(dplyr)
 library(ggplot2)
 library(factoextra)
 library(patchwork)
+library(cluster)
 ```
 
-# Determining Optimal Number of Cluster (Not Doing PCA First)
 
-Prepping Lung Data 
+## Loading, Cleaning, and Scaling Lung Data
 ```{r lung data for elbows}
 lung_meta40 <- read.csv("./lung_meta40.csv")
-lung_meta30 <- read.csv("./lung_meta30.csv")
-lung_meta20 <- read.csv("./lung_meta20.csv")
 
 #removing all columns except the k-value ones 
-new_lung_meta40 = subset(lung_meta40, select = -c(X, image_id, patient_id, gender, mhcII_status, age_at_diagnosis, stage_at_diagnosis, stage_numeric, pack_years, survival_days, survival_status, cause_of_death, adjuvant_therapy, time_to_recurrence_days, recurrence_or_lung_ca_death, totalCell))
-
-new_lung_meta30 = subset(lung_meta30, select = -c(X, image_id, patient_id, gender, mhcII_status, age_at_diagnosis, stage_at_diagnosis, stage_numeric, pack_years, survival_days, survival_status, cause_of_death, adjuvant_therapy, time_to_recurrence_days, recurrence_or_lung_ca_death, totalCell))
-
-new_lung_meta20 = subset(lung_meta20, select = -c(X, image_id, patient_id, gender, mhcII_status, age_at_diagnosis, stage_at_diagnosis, stage_numeric, pack_years, survival_days, survival_status, cause_of_death, adjuvant_therapy, time_to_recurrence_days, recurrence_or_lung_ca_death, totalCell))
+new_lung_meta40 = subset(lung_meta40, select = -c(image_id, patient_id, gender, mhcII_status, age_at_diagnosis, stage_at_diagnosis, stage_numeric, pack_years, survival_days, survival_status, cause_of_death, adjuvant_therapy, time_to_recurrence_days, recurrence_or_lung_ca_death, totalCell))
 
 # removing all the na entries 
 new_lung_meta40 = na.omit(new_lung_meta40)
-new_lung_meta30 = na.omit(new_lung_meta30)
-new_lung_meta20 = na.omit(new_lung_meta20)
 
-# scaling the data 
-new_lung_meta40 = scale(new_lung_meta40)
-new_lung_meta30 = scale(new_lung_meta30)
-new_lung_meta20 = scale(new_lung_meta20)
+# scaling the data and further selecting columns 
+new_lung_meta40 = as.data.frame(scale(new_lung_meta40)) |>
+  select(-c(X, p_CK, p_CD8, p_CD14, p_Other, p_CD19, p_CD4)) 
 
 ```
 
-
+## Assessing Number of Clusters
 ```{r lung number clusters}
 # width sum of squares method (elbow plot)
 wss_lung = fviz_nbclust(new_lung_meta40, kmeans, method = "wss")
@@ -52,70 +43,134 @@ gap_stat_lung = fviz_nbclust(new_lung_meta40, kmeans, method = "gap_stat")
 wss_lung + silhouette_lung + gap_stat_lung
 
 ```
+Based on these results, we are planning to use two clusters for K-means and hierarchical clustering (using Ward distance).
 
-
-# Performing PCA
+## Performing PCA
 ```{r pca-lung}
-current_file <- lung_meta40 
+pca_lung40 <- prcomp(new_lung_meta40)
 
-num_file <- current_file |>
-  select(image_id, starts_with("p_"), starts_with("k")) |>
-  na.omit() 
-
-image_name <- num_file$image_id
-
-current_file <- current_file |>
-  filter(image_id %in% image_name)
-
-num_mat <- num_file |>
-  select(-image_id) |>
-  scale() |>
-  as.matrix()
-
-rownames(num_mat) <- image_name
-
-# Performing PCA
-  
-pca <- prcomp(num_mat, scale = T)
-
-pca$rotation
-
-pca$x
-
-# Computing ideal num of PC
-
-pc_var = pca$sdev^2
-
-pve = pc_var / sum(pc_var)
-pve
-
-plot(pve, xlab = "Principal Component", ylab = "Proportion of Variance Explained", 
-     ylim = c(0, 1), type = "b")
+## view cumulative proportion of variance
+summary(pca_lung40)
 ```
+We will be using five principal components, which has a cumulative proportion of 0.627.
 
-
-# Determining Optimal Number of Clusters (After PCA) 
+## Performing Hierarchical Clustering
 ```{r lung number}
-# with 8 pcs 
-wss_pc8_lung = fviz_nbclust(lung_transform, kmeans, method = "wss")
-
-silhouette_pc8_lung = fviz_nbclust(lung_transform, kmeans, method = "silhouette")
-
-gap_stat_pc8_lung = fviz_nbclust(lung_transform, kmeans, method = "gap_stat")
-
-wss_pc8_lung + silhouette_pc8_lung + gap_stat_pc8_lung
-
-# with 3 pcs
-wss_pc3_lung = fviz_nbclust(lung_transform3, kmeans, method = "wss")
-
-silhouette_pc3_lung = fviz_nbclust(lung_transform3, kmeans, method = "silhouette")
-
-gap_stat_pc3_lung = fviz_nbclust(lung_transform3, kmeans, method = "gap_stat")
-
-wss_pc3_lung + silhouette_pc3_lung + gap_stat_pc3_lung
+set.seed(42)
+# hierarchical clustering using Ward distance and first 5 principle components
+hier_clust <- hcut(pca_lung40$x[,1:5], k = 2)
+## dendrogram
+plot(hier_clust)
+## clusters drawn on dendrogram
+rect.hclust(hier_clust, k = 2)
+## silhouette scores for hierarchical clustering
+fviz_silhouette(hier_clust)
 ```
 
+## Initial EDA on Clusters Produced Using Hierarchical Method
 ```{r }
+# Create data frame for EDA
+lung_meta40_eda <- lung_meta40 |>
+  filter(!is.na(p_CK) & !is.na(p_CD8) & !is.na(p_CD14) & !is.na(p_Other) & !is.na(p_CD19) & !is.na(p_CD4)
+         & !is.na(k_CK) & !is.na(k_CD8) & !is.na(k_CD14) & !is.na(k_Other) & !is.na(k_Other) & !is.na(k_CD19)
+         & !is.na(k_CD4) & !is.na(k_CK_CD8) & !is.na(k_CK_CD14) & !is.na(k_CK_Other) & !is.na(k_CK_CD19) & 
+           !is.na(k_CK_CD4) & !is.na(k_CD8_CD14) & !is.na(k_CD8_Other) & !is.na(k_CD8_CD19) & !is.na(k_CD8_CD4)
+         & !is.na(k_CD14_Other) & !is.na(k_CD14_CD19) & !is.na(k_CD14_CD4) & !is.na(k_Other_CD19) & 
+           !is.na(k_Other_CD4) & !is.na(k_CD19_CD4))
+lung_meta40_eda$cluster_id <- hier_clust$cluster
 
+# count number of patients in each cluster using hierarchical
+lung_meta40_eda |>
+  group_by(cluster_id) |>
+  count()
+
+# create data frame containing medians for all numeric values in each cluster produced using hierarchical clustering
+data <- lung_meta40_eda[, sapply(lung_meta40_eda, is.numeric)]
+cluster_meds <- data |>
+  group_by(cluster_id) |>
+  summarize(across(everything(), median, na.rm = TRUE))
+```
+Our next step will be to produce a heatmap using these two clusters.
+
+## Other Directions
+We have also begun looking into spectral clustering for non-linear data. Using this method, we determined that we should use four clusters. Using code from [this tutorial](https://rpubs.com/gargeejagtap/SpectralClustering), we have produced some initial results shown below.
+```{r}
+# Spectral Clustering
+# https://rpubs.com/gargeejagtap/SpectralClustering
+## Create Similarity matrix of Euclidean distance between points
+S <- as.matrix(dist(pca_lung40$x[,1:5]))
+
+
+## Create Degree matrix
+D <- matrix(0, nrow=nrow(pca_lung40$x[,1:5]), ncol = nrow(pca_lung40$x[,1:5])) # empty nxn matrix
+
+for (i in 1:nrow(pca_lung40$x[,1:5])) {
+  
+  # Find top 10 nearest neighbors using Euclidean distance
+  index <- order(S[i,])[2:11]
+  
+  # Assign value to neighbors
+  D[i,][index] <- 1 
+}
+
+# find mutual neighbors
+D = D + t(D) 
+D[ D == 2 ] = 1
+
+# find degrees of vertices
+degrees = colSums(D) 
+n = nrow(D)
+
+
+## Compute Laplacian matrix
+# Since k > 2 clusters (3), we normalize the Laplacian matrix:
+laplacian = ( diag(n) - diag(degrees^(-1/2)) %*% D %*% diag(degrees^(-1/2)) )
+# eigen(laplacian)
+
+which.max(diff(sort(eigen(laplacian)$values, decreasing = F))) + 1
+
+
+## Compute eigenvectors
+eigenvectors = eigen(laplacian, symmetric = TRUE)
+n = nrow(laplacian)
+eigenvectors = eigenvectors$vectors[,(n - 2):(n - 1)]
+
+
+set.seed(1748)
+## Run Kmeans on eigenvectors
+sc = kmeans(eigenvectors, 4)
+
+
+## Pull clustering results
+sc_results = cbind(pca_lung40$x[,1:5], cluster = as.factor(sc$cluster))
+head(sc_results)
+
+as.data.frame(sc_results) |>
+  group_by(cluster) |>
+  count()
+
+ggplot(data = sc_results, aes(x = PC1, y = PC2)) + aes(color = factor(cluster)) + geom_point()
+
+lung_meta40_eda_spectral <- lung_meta40 |>
+  filter(!is.na(p_CK) & !is.na(p_CD8) & !is.na(p_CD14) & !is.na(p_Other) & !is.na(p_CD19) & !is.na(p_CD4)
+         & !is.na(k_CK) & !is.na(k_CD8) & !is.na(k_CD14) & !is.na(k_Other) & !is.na(k_Other) & !is.na(k_CD19)
+         & !is.na(k_CD4) & !is.na(k_CK_CD8) & !is.na(k_CK_CD14) & !is.na(k_CK_Other) & !is.na(k_CK_CD19) & 
+           !is.na(k_CK_CD4) & !is.na(k_CD8_CD14) & !is.na(k_CD8_Other) & !is.na(k_CD8_CD19) & !is.na(k_CD8_CD4)
+         & !is.na(k_CD14_Other) & !is.na(k_CD14_CD19) & !is.na(k_CD14_CD4) & !is.na(k_Other_CD19) & 
+           !is.na(k_Other_CD4) & !is.na(k_CD19_CD4))
+
+clusters <- sc_results[, 6]
+
+lung_meta40_eda_spectral$cluster_id <- clusters
+lung_meta40_eda_spectral |>
+  group_by(cluster_id) |>
+  count()
+
+data <- lung_meta40_eda_spectral[, sapply(lung_meta40_eda_spectral, is.numeric)]
+cluster_meds_spectral <- data |>
+  group_by(cluster_id) |>
+  summarize(across(everything(), median, na.rm = TRUE))
+
+fviz_silhouette(silhouette(sc$cluster, dist(eigenvectors)))
 ```
 
