@@ -16,9 +16,9 @@ library(patchwork)
 
 Prepping Lung Data 
 ```{r lung data for elbows}
-lung_meta40 <- read.csv("lung_meta40.csv")
-lung_meta30 <- read.csv("lung_meta30.csv")
-lung_meta20 <- read.csv("lung_meta20.csv")
+lung_meta40 <- read.csv("./lung_meta40.csv")
+lung_meta30 <- read.csv("./lung_meta30.csv")
+lung_meta20 <- read.csv("./lung_meta20.csv")
 
 #removing all columns except the k-value ones 
 new_lung_meta40 = subset(lung_meta40, select = -c(X, image_id, patient_id, gender, mhcII_status, age_at_diagnosis, stage_at_diagnosis, stage_numeric, pack_years, survival_days, survival_status, cause_of_death, adjuvant_therapy, time_to_recurrence_days, recurrence_or_lung_ca_death, totalCell))
@@ -88,6 +88,46 @@ silhouette_ova = fviz_nbclust(new_ovarian_meta40, kmeans, method = "silhouette")
 gap_stat_ova = fviz_nbclust(new_ovarian_meta40, kmeans, method = "gap_stat")
 
 wss_ova + silhouette_ova + gap_stat_ova
+```
+
+
+# Performing PCA
+```{r pca-lung}
+current_file <- lung_meta40 
+
+num_file <- current_file |>
+  select(image_id, starts_with("p_"), starts_with("k")) |>
+  na.omit() 
+
+image_name <- num_file$image_id
+
+current_file <- current_file |>
+  filter(image_id %in% image_name)
+
+num_mat <- num_file |>
+  select(-image_id) |>
+  scale() |>
+  as.matrix()
+
+rownames(num_mat) <- image_name
+
+# Performing PCA
+  
+pca <- prcomp(num_mat, scale = T)
+
+pca$rotation
+
+pca$x
+
+# Computing ideal num of PC
+
+pc_var = pca$sdev^2
+
+pve = pc_var / sum(pc_var)
+pve
+
+plot(pve, xlab = "Principal Component", ylab = "Proportion of Variance Explained", 
+     ylim = c(0, 1), type = "b")
 ```
 
 
