@@ -7,7 +7,7 @@ ovarian_cell <- ovarianData$ovarian_cells
 ovarian_meta <- ovarianData$ovarian_metadata
 
 # The micron value of R we use to calculate our K/K Cross function values 
-micron <- 20
+micron <- 30
 
 cell_types <- unique(ovarian_cell$pheno) # 6 unqiue cell types (Other, Tumor, B Cell, Macrophage, 
                                          # T Helper, Cytotoxic T)
@@ -296,3 +296,5 @@ for(i in 1:nrow(ovarian_meta)){
     ovarian_meta$k_THelper_CytotoxicT[i] <- NA
   }
 }
+
+

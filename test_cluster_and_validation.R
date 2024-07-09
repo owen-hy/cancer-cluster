@@ -22,14 +22,17 @@ plot(sil)
 fviz_silhouette(k_means_lung)
 
 # enhanced hierarchical clustering 
-hier_clust_lung <- eclust(lung_transform3, FUNcluster = "hclust", k = 2, hc_method = "ward.D", graph = FALSE)
+hier_clust_lung <- eclust(lung_transform3, FUNcluster = "hclust", k = 2, hc_method = "ward.D", graph = TRUE)
 
 sil2 <- silhouette(hier_clust_lung$cluster, dist(new_lung_meta40))
 sil2
 plot(sil2)
 fviz_silhouette(hier_clust_lung)
 
-
 View(lung_transform)
 View(new_lung_meta40)
 ??eclust
+
+outlierPCOut(new_lung_meta40)
+
+??fviz_nbclust
