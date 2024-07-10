@@ -1,6 +1,7 @@
 ## Boxplot for clusters, analysis
 
 ## Change according to what you need
+## (lung_meta40_hier, lung_meta40_k)
 current_data <- lung_meta40_eda
 
 # Boxplot of age
