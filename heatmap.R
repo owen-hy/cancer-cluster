@@ -1,4 +1,5 @@
 ## Creating a heatmap
+install.packages("pheatmap")
 library(pheatmap)
 
 file_plot <- lung_meta40_eda_spectral
@@ -13,9 +14,15 @@ heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
   select(-X) |>
   as.matrix()
 
-pheatmap(heat_df, annotation_row = clust)
-  
 rownames(heat_df) = rownames(clust)
 rownames(clust)
 
+View(heat_df)
+
+heat_df %>% 
+  arrange(cluster_id) %>% 
+  pheatmap(annotation_row = clust, cluster_cols = TRUE, cluster_rows = TRUE)
+  
+
+View(file_plot)
 
