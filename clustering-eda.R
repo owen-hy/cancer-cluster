@@ -40,16 +40,16 @@ fviz_nbclust(
   print.summary = TRUE
 )
 
-# hierarchical clustering using Ward distance and first 5 principle components
-hier_clust <- hcut(pca_lung40$x[,1:5], k = 2)
-## dendrogram
-plot(hier_clust)
-## clusters drawn on dendrogram
-rect.hclust(hier_clust, k = 2)
-## silhouette scores for hierarchical clustering
-fviz_silhouette(hier_clust)
+# # hierarchical clustering using Ward distance and first 5 principle components
+# hier_clust <- hcut(pca_lung40$x[,1:5], k = 2)
+# ## dendrogram
+# plot(hier_clust)
+# ## clusters drawn on dendrogram
+# rect.hclust(hier_clust, k = 2)
+# ## silhouette scores for hierarchical clustering
+# fviz_silhouette(hier_clust)
 
-# kmeans_lung40 <- kmeans(data.frame(pca_lung40$x[, 1:5]), centers = 2)
+kmeans_lung40 <- kmeans(data.frame(pca_lung40$x[, 1:5]), centers = 2)
 # kmeans_lung40_e <- eclust(pca_lung40$x[, 1:5], "kmeans", k = 2, nstart = 100)
 # fviz_pca_ind(pca_lung40, habillage = kmeans_lung40$cluster, addEllipses = TRUE)
 # fviz_silhouette(kmeans_lung40_e)
@@ -62,12 +62,39 @@ lung_meta40_eda <- lung_meta40 |>
            !is.na(k_CK_CD4) & !is.na(k_CD8_CD14) & !is.na(k_CD8_Other) & !is.na(k_CD8_CD19) & !is.na(k_CD8_CD4)
          & !is.na(k_CD14_Other) & !is.na(k_CD14_CD19) & !is.na(k_CD14_CD4) & !is.na(k_Other_CD19) & 
            !is.na(k_Other_CD4) & !is.na(k_CD19_CD4))
-lung_meta40_eda$cluster_id <- hier_clust$cluster
+lung_meta40_eda$cluster_id <- kmeans_lung40$cluster
 
-# count number of patients in each cluster using hierarchical
+# count number of patients in each cluster using kmeans
 lung_meta40_eda |>
   group_by(cluster_id) |>
   count()
+
+## Creating a heatmap
+install.packages("pheatmap")
+library(pheatmap)
+
+file_plot <- lung_meta40_eda |>
+  arrange(cluster_id)
+
+clust <- file_plot |> select(cluster_id) |>
+  mutate(cluster_id = factor(cluster_id))
+rownames(clust) = rownames(file_plot)
+
+heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
+  scale() |>
+  as.data.frame() |>
+  select(-X) |>
+  as.matrix()
+
+rownames(heat_df) = rownames(clust)
+rownames(clust)
+
+View(heat_df)
+
+  pheatmap(heat_df, annotation_row = clust, cluster_cols = FALSE, cluster_rows = FALSE)
+
+
+View(file_plot)
 
 # calculate medians for all numeric values in each cluster produced using hierarchical clustering
 data <- lung_meta40_eda[, sapply(lung_meta40_eda, is.numeric)]
