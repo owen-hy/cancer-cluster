@@ -123,6 +123,35 @@ cluster_meds <- data |>
 ```
 Our next step will be to produce a heatmap using these two clusters.
 
+## Parsing data 
+```{r binary conversion}
+# for hierarchical clusters
+lung_meta40_hier2 <- lung_meta40_hier
+
+lung_meta40_hier2$gender <- factor(lung_meta40_hier2$gender, levels = c("M", "F"), labels = c("1","2"))
+
+lung_meta40_hier2$mhcII_status <- factor(lung_meta40_hier2$mhcII_status, levels = c("low", "high"), labels = c("1","2"))
+
+lung_meta40_hier2$adjuvant_therapy <- factor(lung_meta40_hier2$adjuvant_therapy, levels = c("No", "Yes"), labels = c("1","2"))
+
+lung_meta40_hier2$gender = as.integer(lung_meta40_hier2$gender) 
+lung_meta40_hier2$mhcII_status = as.integer(lung_meta40_hier2$mhcII_status)
+lung_meta40_hier2$adjuvant_therapy = as.integer(lung_meta40_hier2$adjuvant_therapy) 
+
+# for kmeans clusters
+lung_meta40_k2 <- lung_meta40_k
+
+lung_meta40_k2$gender <- factor(lung_meta40_k2$gender, levels = c("M", "F"), labels = c("1","2"))
+
+lung_meta40_k2$mhcII_status <- factor(lung_meta40_k2$mhcII_status, levels = c("low", "high"), labels = c("1","2"))
+
+lung_meta40_k2$adjuvant_therapy <- factor(lung_meta40_k2$adjuvant_therapy, levels = c("No", "Yes"), labels = c("1","2"))
+
+lung_meta40_k2$gender = as.integer(lung_meta40_k2$gender) 
+lung_meta40_k2$mhcII_status = as.integer(lung_meta40_k2$mhcII_status)
+lung_meta40_k2$adjuvant_therapy = as.integer(lung_meta40_k2$adjuvant_therapy) 
+```
+
 ## Heatmaps
 ```{r, results = 'hide'}
 # heat map of clusters resulting from hierarchical clustering
@@ -168,30 +197,4 @@ pheatmap(heat_df, annotation_row = clust, cluster_cols = FALSE, cluster_rows = F
 
 
 View(file_plot)
-```
-## Parsing data 
-```{r binary conversion}
-lung_meta40_hier2 <- lung_meta40_hier
-
-lung_meta40_hier2$gender <- factor(lung_meta40_hier2$gender, levels = c("M", "F"), labels = c("1","2"))
-
-lung_meta40_hier2$mhcII_status <- factor(lung_meta40_hier2$mhcII_status, levels = c("low", "high"), labels = c("1","2"))
-
-lung_meta40_hier2$adjuvant_therapy <- factor(lung_meta40_hier2$adjuvant_therapy, levels = c("No", "Yes"), labels = c("1","2"))
-
-lung_meta40_hier2$gender = as.integer(lung_meta40_hier2$gender) 
-lung_meta40_hier2$mhcII_status = as.integer(lung_meta40_hier2$mhcII_status)
-lung_meta40_hier2$adjuvant_therapy = as.integer(lung_meta40_hier2$adjuvant_therapy) 
-
-lung_meta40_k2 <- lung_meta40_k
-
-lung_meta40_k2$gender <- factor(lung_meta40_k2$gender, levels = c("M", "F"), labels = c("1","2"))
-
-lung_meta40_k2$mhcII_status <- factor(lung_meta40_k2$mhcII_status, levels = c("low", "high"), labels = c("1","2"))
-
-lung_meta40_k2$adjuvant_therapy <- factor(lung_meta40_k2$adjuvant_therapy, levels = c("No", "Yes"), labels = c("1","2"))
-
-lung_meta40_k2$gender = as.integer(lung_meta40_k2$gender) 
-lung_meta40_k2$mhcII_status = as.integer(lung_meta40_k2$mhcII_status)
-lung_meta40_k2$adjuvant_therapy = as.integer(lung_meta40_k2$adjuvant_therapy) 
 ```
