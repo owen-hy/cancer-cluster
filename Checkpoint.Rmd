@@ -12,6 +12,9 @@ library(factoextra)
 library(patchwork)
 library(cluster)
 library(pheatmap)
+library(survival)
+library(survminer)
+library(ggfortify)
 ```
 
 
@@ -295,4 +298,15 @@ current_data |>
   geom_boxplot() +
   coord_flip()
 ```
+
+## Survival Analysis 
+
+```{r}
+current_data <- lung_meta40_hier
+
+km_fit <- survfit(Surv(survival_days, survival_status) ~ cluster_id, data = current_data)
+autoplot(km_fit)
+survdiff(Surv(survival_days, survival_status) ~ cluster_id, data= current_data, rho = 1)
+```
+
 
