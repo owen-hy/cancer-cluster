@@ -305,7 +305,7 @@ current_data |>
 current_data <- lung_meta40_hier
 
 km_fit <- survfit(Surv(survival_days, survival_status) ~ cluster_id, data = current_data)
-autoplot(km_fit)
+ggsurvplot(km_fit, data = current_data)
 survdiff(Surv(survival_days, survival_status) ~ cluster_id, data= current_data, rho = 1)
 ```
 
