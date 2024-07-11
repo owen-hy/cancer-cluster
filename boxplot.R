@@ -2,79 +2,95 @@
 
 ## Change according to what you need
 ## (lung_meta40_hier, lung_meta40_k)
-## Smaller cluster is 1 in heir, and 2 in k
+## Smaller cluster is 1 in heir
 current_data <- lung_meta40_hier
-# Boxplot of age
-current_data |>
-  ggplot(aes(x = factor(cluster_id), y = age_at_diagnosis)) +
-  geom_boxplot() +
-  labs(x = 'Cluster',
-       y = 'Age',
-       title = 'Age by Cluster')
 
-# Boxplot of pack per years
-
-current_data|>
-  ggplot(aes(x = factor(cluster_id), y = pack_years)) +
-  geom_boxplot() +
-  labs(x = 'Cluster',
-       y = 'Pack per Year',
-       title = 'Pack per Year by Cluster')
-
-# Boxplot of recurrence day, also accounting for proportion missing
+current_data <- current_data[, sapply(current_data, is.numeric)] |>
+  select(-X, -stage_numeric, -survival_status, -recurrence_or_lung_ca_death) |>
+  pivot_longer(cols = -last_col(),
+               names_to = "type",
+               values_to = "value") 
 
 current_data |>
-  ggplot(aes(x = factor(cluster_id), y = time_to_recurrence_days)) +
+  ggplot(aes(x = type, y = value, col = factor(cluster_id))) +
   geom_boxplot() +
-  labs(x = 'Cluster',
-       y = 'Days till Recurrence',
-       title = 'Days till Recurrence by Cluster')
+  coord_flip() #This is for all, but you can't really tell much
+
+## Just Proportions
 
 current_data |>
-  group_by(cluster_id) |>
-  summarize(missing = sum(is.na(time_to_recurrence_days)) / n())
+  filter(startsWith(type, "p_")) |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id))) +
+  geom_boxplot() +
+  coord_flip()
 
-
-# Boxplot of proportions
+## Just K standalone (except CK, because it was harder to see)
 
 current_data |>
-  ggplot(aes(x = factor(cluster_id), y = p_CK)) +
+  filter(type %in% c('k_CD8', 'k_CD4', 'k_CD19', 'k_CD14', 'k_Other')) |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id))) +
   geom_boxplot() +
-  labs(x = 'Cluster',
-       y = 'Proportion of CK',
-       title = 'Proportion of CK by Cluster')
+  coord_flip()
 
 current_data |>
-  ggplot(aes(x = factor(cluster_id), y = p_CD8)) +
-  geom_boxplot() +
-  labs(x = 'Cluster',
-       y = 'Proportion of CD8',
-       title = 'Proportion of CD8 by Cluster')
+  filter(type == 'k_CK') |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id))) +
+   geom_boxplot() 
+
+## K Crosses for CK
 
 current_data |>
-  ggplot(aes(x = factor(cluster_id), y = p_CD14)) +
+  filter(startsWith(type, "k_CK_")) |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id))) +
   geom_boxplot() +
-  labs(x = 'Cluster',
-       y = 'Proportion of CD14',
-       title = 'Proportion of CD14 by Cluster')
+  coord_flip()
+
+## K Crosses for CD8
 
 current_data |>
-  ggplot(aes(x = factor(cluster_id), y = p_Other)) +
+  filter(startsWith(type, "k_CD8_")) |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id))) +
   geom_boxplot() +
-  labs(x = 'Cluster',
-       y = 'Proportion of Other Cells',
-       title = 'Proportion of Other Cells by Cluster')
+  coord_flip()
+
+# K Crosses for CD14
 
 current_data |>
-  ggplot(aes(x = factor(cluster_id), y = p_CD19)) +
+  filter(startsWith(type, "k_CD14_")) |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id))) +
   geom_boxplot() +
-  labs(x = 'Cluster',
-       y = 'Proportion of CD19',
-       title = 'Proportion of CD19 by Cluster')
+  coord_flip()
+
+# K Crosses for Other
 
 current_data |>
-  ggplot(aes(x = factor(cluster_id), y = p_CD4)) +
+  filter(startsWith(type, "k_Other_")) |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id))) +
   geom_boxplot() +
-  labs(x = 'Cluster',
-       y = 'Proportion of CD4',
-       title = 'Proportion of CD4 by Cluster')
+  coord_flip()
+
+# Last K Cross for CD19
+
+current_data |>
+  filter(startsWith(type, "k_CD19_")) |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id))) +
+  geom_boxplot() +
+  coord_flip()
+
+# For metadata
+
+current_data |>
+  filter(!startsWith(type, "k_"), !startsWith(type, "p_"), 
+         type != "pack_years", type != 'age_at_diagnosis') |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id))) +
+  geom_boxplot() +
+  coord_flip()
+
+current_data |>
+  filter(type == "pack_years"| type == 'age_at_diagnosis') |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id))) +
+  geom_boxplot() +
+  coord_flip()
+
+
+
