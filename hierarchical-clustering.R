@@ -1,22 +1,12 @@
----
-title: "Checkpoint"
-output: html_document
-date: "2024-07-08"
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+# load libraries
 library(dplyr)
 library(ggplot2)
 library(factoextra)
 library(patchwork)
 library(cluster)
 library(pheatmap)
-```
 
-
-## Loading, Cleaning, and Scaling Lung Data
-```{r lung data for elbows}
+# Load lung data with Ripley's K calculations using r = 40 microns
 lung_meta40 <- read.csv("./lung_meta40.csv")
 
 # Select columns
@@ -25,37 +15,16 @@ new_lung_meta40 <- lung_meta40 |>
 
 # Scale data and remove rows containing NA's
 new_lung_meta40 <- as.data.frame(scale(new_lung_meta40))
-new_lung_meta40 <- na.omit(new_lung_meta40) 
-```
+new_lung_meta40 <- na.omit(new_lung_meta40)
 
-## Assessing Number of Clusters
-```{r lung number clusters}
-# width sum of squares method (elbow plot)
-wss_lung = fviz_nbclust(new_lung_meta40, hcut, method = "wss")
-
-# silhouette method
-silhouette_lung = fviz_nbclust(new_lung_meta40, hcut, method = "silhouette")
-
-# gap statistic method 
-gap_stat_lung = fviz_nbclust(new_lung_meta40, hcut, method = "gap_stat")
-wss_lung + silhouette_lung + gap_stat_lung
-
-```
-
-Based on these results, we are planning to use two clusters hierarchical clustering (using Ward distance).
-
-## Performing PCA
-```{r pca-lung}
+# Perform PCA
 pca_lung40 <- prcomp(new_lung_meta40)
-
-## view cumulative proportion of variance
+## View cumulative proportion of variance
 summary(pca_lung40)
-```
-We will be using five principal components, which has a cumulative proportion of 0.627. 
 
-## Performing Hierarchical Clustering
-```{r}
+# Setting a seed
 set.seed(42)
+
 # Perform Hierarchical clustering using Ward distance and first 5 principle components
 ## Produces same dendrogram, but want different objects to draw clusters on
 hier_clust2 <- hcut(pca_lung40$x[,1:5], k = 2)
@@ -78,10 +47,7 @@ rect.hclust(hier_clust4, k = 4)
 fviz_silhouette(hier_clust2) # 0.4
 fviz_silhouette(hier_clust3) # 0.31
 fviz_silhouette(hier_clust4) # 0.31
-```
 
-## Initial EDA on Clusters Produced Using Hierarchical and K-Means
-```{r, warning = FALSE}
 # Create data frame for EDA for hierarchical clustering
 lung_meta40_hier <- lung_meta40 |>
   filter(!is.na(k_CK) & !is.na(k_CD8) & !is.na(k_CD14) & !is.na(k_Other) & !is.na(k_Other) & !is.na(k_CD19)
@@ -129,11 +95,7 @@ data <- lung_meta40_hier_4[, sapply(lung_meta40_hier_4, is.numeric)]
 cluster_meds_4 <- data |>
   group_by(as.integer(cluster_id_4)) |>
   summarize(across(everything(), median, na.rm = TRUE))
-```
-Our next step will be to produce a heatmaps.
 
-## Parsing data 
-```{r binary conversion}
 # Making categorical data numeric for heatmaps
 lung_meta40_hier2 <- lung_meta40_hier
 
@@ -146,10 +108,7 @@ lung_meta40_hier2$adjuvant_therapy <- factor(lung_meta40_hier2$adjuvant_therapy,
 lung_meta40_hier2$gender = as.integer(lung_meta40_hier2$gender) 
 lung_meta40_hier2$mhcII_status = as.integer(lung_meta40_hier2$mhcII_status)
 lung_meta40_hier2$adjuvant_therapy = as.integer(lung_meta40_hier2$adjuvant_therapy) 
-```
 
-## Heatmaps
-```{r, results = 'hide'}
 # Creating 3 Heatmaps
 ## 2 clusters
 file_plot <- lung_meta40_hier2 |>
@@ -201,4 +160,7 @@ rownames(heat_df) = rownames(clust)
 rownames(clust)
 pheatmap(heat_df, annotation_row = clust, cluster_cols = FALSE, cluster_rows = FALSE)
 View(file_plot)
-```
+
+
+
+
