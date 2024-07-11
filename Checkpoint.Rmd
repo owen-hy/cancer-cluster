@@ -153,13 +153,15 @@ lung_meta40_hier2$adjuvant_therapy = as.integer(lung_meta40_hier2$adjuvant_thera
 
 ## Heatmaps
 ```{r, results = 'hide'}
-# Creating 3 Heatmaps
+# Creating heatmaps
 ## 2 clusters
+set.seed(42)
 file_plot <- lung_meta40_hier2 |>
   select(-c(cluster_id_3, cluster_id_4)) |>
-  arrange(cluster_id_2)
-clust <- file_plot |> select(cluster_id_2) |>
-  mutate(cluster_id_2 = factor(cluster_id_2))
+  arrange(cluster_id_2) |>
+  mutate(new_cluster_id_2 = factor(cluster_id_2)) |>
+  select(-cluster_id_2)
+clust <- file_plot |> select(new_cluster_id_2)
 rownames(clust) = rownames(file_plot)
 heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
   scale() |>
@@ -168,15 +170,21 @@ heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
   as.matrix()
 rownames(heat_df) = rownames(clust)
 rownames(clust)
-pheatmap(heat_df, annotation_row = clust, cluster_cols = FALSE, cluster_rows = FALSE)
+pheatmap(heat_df, 
+         annotation_row = clust, 
+         cluster_cols = TRUE, 
+         cluster_rows = FALSE,
+         clustering_method = "ward.D2")
 View(file_plot)
+
 
 ## 3 clusters
 file_plot <- lung_meta40_hier2 |>
   select(-c(cluster_id_2, cluster_id_4)) |>
-  arrange(cluster_id_3)
-clust <- file_plot |> select(cluster_id_3) |>
-  mutate(cluster_id_3 = factor(cluster_id_3))
+  arrange(cluster_id_3) |>
+  mutate(new_cluster_id_3 = factor(cluster_id_3)) |>
+  select(-cluster_id_3)
+clust <- file_plot |> select(new_cluster_id_3)
 rownames(clust) = rownames(file_plot)
 heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
   scale() |>
@@ -185,15 +193,20 @@ heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
   as.matrix()
 rownames(heat_df) = rownames(clust)
 rownames(clust)
-pheatmap(heat_df, annotation_row = clust, cluster_cols = FALSE, cluster_rows = FALSE)
+pheatmap(heat_df, 
+         annotation_row = clust, 
+         cluster_cols = TRUE, 
+         cluster_rows = FALSE,
+         clustering_method = "ward.D2")
 View(file_plot)
 
 ## 4 clusters
 file_plot <- lung_meta40_hier2 |>
   select(-c(cluster_id_3, cluster_id_2)) |>
-  arrange(cluster_id_4)
-clust <- file_plot |> select(cluster_id_4) |>
-  mutate(cluster_id_4 = factor(cluster_id_4))
+  arrange(cluster_id_4) |>
+  mutate(new_cluster_id_4 = factor(cluster_id_4)) |>
+  select(-cluster_id_4)
+clust <- file_plot |> select(new_cluster_id_4)
 rownames(clust) = rownames(file_plot)
 heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
   scale() |>
@@ -202,7 +215,11 @@ heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
   as.matrix()
 rownames(heat_df) = rownames(clust)
 rownames(clust)
-pheatmap(heat_df, annotation_row = clust, cluster_cols = FALSE, cluster_rows = FALSE)
+pheatmap(heat_df, 
+         annotation_row = clust, 
+         cluster_cols = TRUE, 
+         cluster_rows = FALSE,
+         clustering_method = "ward.D2")
 View(file_plot)
 ```
 
