@@ -11,7 +11,7 @@ current_data <- current_data |> select_if(~!is.numeric(.)) |>
 current_data |>
   select(cluster_id, gender) |>
   ggplot(aes(x = factor(cluster_id), fill = gender)) +
-  geom_bar(position = 'dodge')
+  geom_bar()
 
 current_data |>
   select(cluster_id, mhcII_status) |>
