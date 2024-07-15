@@ -25,9 +25,13 @@ library(ggfortify)
 ```{r lung data for elbows}
 lung_meta40 <- read.csv("./lung_meta40.csv")
 
-# Select columns
+# Select columns (include proportions and K values)
+# new_lung_meta40 <- lung_meta40 |>
+#   select(starts_with("k"))
+
 new_lung_meta40 <- lung_meta40 |>
-  select(starts_with("k"))
+  select(starts_with("k"), starts_with("p")) |>
+  select(-c(pack_years, patient_id))
 
 # Scale data and remove rows containing NA's
 new_lung_meta40 <- as.data.frame(scale(new_lung_meta40))
@@ -62,13 +66,36 @@ We will be using five principal components, which has a cumulative proportion of
 ## Performing Hierarchical Clustering
 ```{r}
 set.seed(42)
+# # Perform Hierarchical clustering using Ward distance and first 5 principle components
+# ## Produces same dendrogram, but want different objects to draw clusters on
+# hier_clust2 <- hcut(pca_lung40$x[,1:5], k = 2)
+# ## 3 clusters
+# hier_clust3 <- hcut(pca_lung40$x[,1:5], k = 3)
+# ## 4 clusters
+# hier_clust4 <- hcut(pca_lung40$x[,1:5], k = 4)
+# 
+# # View dendrogram and clusters
+# ## 2 clusters
+# plot(hier_clust2)
+# rect.hclust(hier_clust2, k = 2)
+# ## 3 clusters
+# plot(hier_clust3)
+# rect.hclust(hier_clust3, k = 3)
+# ## 4 clusters
+# plot(hier_clust4)
+# rect.hclust(hier_clust4, k = 4)
+# ## silhouette scores for hierarchical clustering
+# fviz_silhouette(hier_clust2) # 0.4
+# fviz_silhouette(hier_clust3) # 0.31
+# fviz_silhouette(hier_clust4) # 0.31
+
 # Perform Hierarchical clustering using Ward distance and first 5 principle components
 ## Produces same dendrogram, but want different objects to draw clusters on
-hier_clust2 <- hcut(pca_lung40$x[,1:5], k = 2)
+hier_clust2 <- hcut(new_lung_meta40, k = 2)
 ## 3 clusters
-hier_clust3 <- hcut(pca_lung40$x[,1:5], k = 3)
+hier_clust3 <- hcut(new_lung_meta40, k = 3)
 ## 4 clusters
-hier_clust4 <- hcut(pca_lung40$x[,1:5], k = 4)
+hier_clust4 <- hcut(new_lung_meta40, k = 4)
 
 # View dendrogram and clusters
 ## 2 clusters
@@ -81,9 +108,9 @@ rect.hclust(hier_clust3, k = 3)
 plot(hier_clust4)
 rect.hclust(hier_clust4, k = 4)
 ## silhouette scores for hierarchical clustering
-fviz_silhouette(hier_clust2) # 0.4
-fviz_silhouette(hier_clust3) # 0.31
-fviz_silhouette(hier_clust4) # 0.31
+fviz_silhouette(hier_clust2) # 0.11
+fviz_silhouette(hier_clust3) # 0.11
+fviz_silhouette(hier_clust4) # 0.10
 ```
 
 ## Initial EDA on Clusters Produced Using Hierarchical and K-Means
@@ -104,15 +131,15 @@ lung_meta40_hier$cluster_id_4 <- hier_clust4$cluster
 # Count number of patients in each cluster
 lung_meta40_hier |>
   group_by(cluster_id_2) |>
-  count() # 22 cluster 1, 114 cluster 2
+  count() # 71 cluster 1, 65 cluster 2
 
 lung_meta40_hier |>
   group_by(cluster_id_3) |>
-  count() # 22 cluster 1, 18 cluster 2, 96 cluster 3
+  count() # 68 cluster 1, 65 cluster 2, 3 cluster 3
 
 lung_meta40_hier |>
   group_by(cluster_id_4) |>
-  count() # 19 clutser 1, 18 cluster 2, 3 cluster 3, 96 cluster 4
+  count() # 68 clutser 1, 18 cluster 2, 3 cluster 3, 47 cluster 4
 
 # create data frame containing medians for all numeric values in each cluster produced using hierarchical clustering
 lung_meta40_hier_2 <- lung_meta40_hier |>

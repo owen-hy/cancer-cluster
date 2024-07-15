@@ -92,3 +92,66 @@ cluster_meds_spectral <- data |>
 
 fviz_silhouette(silhouette(sc$cluster, dist(eigenvectors)))
 ```
+
+# ## Performing K-means Clustering
+# ```{r lung number}
+# set.seed(42)
+# kmeans_lung40 <- kmeans(data.frame(pca_lung40$x[, 1:5]), centers = 2)
+# `
+
+# Create data frame for EDA for K-means clustering
+lung_meta40_k <- lung_meta40 |>
+  filter(!is.na(p_CK) & !is.na(p_CD8) & !is.na(p_CD14) & !is.na(p_Other) & !is.na(p_CD19) & !is.na(p_CD4)
+         & !is.na(k_CK) & !is.na(k_CD8) & !is.na(k_CD14) & !is.na(k_Other) & !is.na(k_Other) & !is.na(k_CD19)
+         & !is.na(k_CD4) & !is.na(k_CK_CD8) & !is.na(k_CK_CD14) & !is.na(k_CK_Other) & !is.na(k_CK_CD19) & 
+           !is.na(k_CK_CD4) & !is.na(k_CD8_CD14) & !is.na(k_CD8_Other) & !is.na(k_CD8_CD19) & !is.na(k_CD8_CD4)
+         & !is.na(k_CD14_Other) & !is.na(k_CD14_CD19) & !is.na(k_CD14_CD4) & !is.na(k_Other_CD19) & 
+           !is.na(k_Other_CD4) & !is.na(k_CD19_CD4))
+
+lung_meta40_k$cluster_id <- kmeans_lung40$cluster
+
+# count number of patients in each cluster using k-means
+lung_meta40_k |>
+  group_by(cluster_id) |>
+  count()
+
+# create data frame containing medians for all numeric values in each cluster produced using K-means clustering
+data <- lung_meta40_k[, sapply(lung_meta40_k, is.numeric)]
+cluster_meds <- data |>
+  group_by(cluster_id) |>
+  summarize(across(everything(), median, na.rm = TRUE))
+
+# for kmeans clusters
+lung_meta40_k2 <- lung_meta40_k
+
+lung_meta40_k2$gender <- factor(lung_meta40_k2$gender, levels = c("M", "F"), labels = c("1","2"))
+
+lung_meta40_k2$mhcII_status <- factor(lung_meta40_k2$mhcII_status, levels = c("low", "high"), labels = c("1","2"))
+
+lung_meta40_k2$adjuvant_therapy <- factor(lung_meta40_k2$adjuvant_therapy, levels = c("No", "Yes"), labels = c("1","2"))
+
+lung_meta40_k2$gender = as.integer(lung_meta40_k2$gender) 
+lung_meta40_k2$mhcII_status = as.integer(lung_meta40_k2$mhcII_status)
+lung_meta40_k2$adjuvant_therapy = as.integer(lung_meta40_k2$adjuvant_therapy) 
+
+# heat map of clusters resulting from K-means clustering
+file_plot <- lung_meta40_k2 |>
+  arrange(cluster_id)
+
+clust <- file_plot |> select(cluster_id) |>
+  mutate(cluster_id = factor(cluster_id))
+rownames(clust) = rownames(file_plot)
+
+heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
+  scale() |>
+  as.data.frame() |>
+  select(-X) |>
+  as.matrix()
+
+rownames(heat_df) = rownames(clust)
+rownames(clust)
+
+pheatmap(heat_df, annotation_row = clust, cluster_cols = FALSE, cluster_rows = FALSE)
+
+
+View(file_plot)

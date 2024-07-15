@@ -15,8 +15,8 @@ new_lung_meta40 = subset(lung_meta40, select = -c(image_id, patient_id, gender, 
 new_lung_meta40 = na.omit(new_lung_meta40)
 
 # scaling the data 
-new_lung_meta40 = as.data.frame(scale(new_lung_meta40)) |>
-  select(-c(X, p_CK, p_CD8, p_CD14, p_Other, p_CD19, p_CD4)) 
+new_lung_meta40 = as.data.frame(scale(new_lung_meta40))
+#  select(-c(X, p_CK, p_CD8, p_CD14, p_Other, p_CD19, p_CD4)) 
 
 set.seed(42)
 
@@ -41,7 +41,7 @@ fviz_nbclust(
 )
 
 # hierarchical clustering using Ward distance and first 5 principle components
-hier_clust <- hcut(pca_lung40$x[,1:5], k = 2)
+hier_clust <- hcut(new_lung_meta40, k = 2)
 ## dendrogram
 plot(hier_clust)
 ## clusters drawn on dendrogram

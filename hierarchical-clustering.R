@@ -11,7 +11,8 @@ lung_meta40 <- read.csv("./lung_meta40.csv")
 
 # Select columns
 new_lung_meta40 <- lung_meta40 |>
-  select(starts_with("k"))
+  select(starts_with("k"), starts_with("p")) |>
+  select(-c(pack_years, patient_id))
 
 # Scale data and remove rows containing NA's
 new_lung_meta40 <- as.data.frame(scale(new_lung_meta40))
@@ -27,11 +28,11 @@ set.seed(42)
 
 # Perform Hierarchical clustering using Ward distance and first 5 principle components
 ## Produces same dendrogram, but want different objects to draw clusters on
-hier_clust2 <- hcut(pca_lung40$x[,1:5], k = 2)
+hier_clust2 <- hcut(new_lung_meta40, k = 2)
 ## 3 clusters
-hier_clust3 <- hcut(pca_lung40$x[,1:5], k = 3)
+hier_clust3 <- hcut(new_lung_meta40, k = 3)
 ## 4 clusters
-hier_clust4 <- hcut(pca_lung40$x[,1:5], k = 4)
+hier_clust4 <- hcut(new_lung_meta40, k = 4)
 
 # View dendrogram and clusters
 ## 2 clusters
@@ -44,9 +45,9 @@ rect.hclust(hier_clust3, k = 3)
 plot(hier_clust4)
 rect.hclust(hier_clust4, k = 4)
 ## silhouette scores for hierarchical clustering
-fviz_silhouette(hier_clust2) # 0.4
-fviz_silhouette(hier_clust3) # 0.31
-fviz_silhouette(hier_clust4) # 0.31
+fviz_silhouette(hier_clust2) # 0.11
+fviz_silhouette(hier_clust3) # 0.11
+fviz_silhouette(hier_clust4) # 0.10
 
 # Create data frame for EDA for hierarchical clustering
 lung_meta40_hier <- lung_meta40 |>
@@ -111,7 +112,7 @@ lung_meta40_hier2$adjuvant_therapy = as.integer(lung_meta40_hier2$adjuvant_thera
 
 # Creating heatmaps
 ## 2 clusters
-set.seed(42)
+# set.seed(42)
 file_plot <- lung_meta40_hier2 |>
   select(-c(cluster_id_3, cluster_id_4)) |>
   arrange(cluster_id_2) |>
