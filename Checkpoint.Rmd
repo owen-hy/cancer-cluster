@@ -1,6 +1,8 @@
 ---
 title: "Checkpoint"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 date: "2024-07-08"
 ---
 
@@ -259,7 +261,7 @@ current_data |>
 current_data |>
   filter(type == 'k_CK') |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_2))) +
-   geom_boxplot() 
+  geom_boxplot() 
 
 ## K Crosses for CK
 
@@ -272,7 +274,9 @@ current_data |>
 ## K Crosses for CD8
 
 current_data |>
-  filter(startsWith(type, "k_CD8_")) |>
+  filter(startsWith(type, "k_CD8_") | endsWith(type, "_CD8"),
+         type != 'p_CD8',
+         type != 'k_CD8') |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_2))) +
   geom_boxplot() +
   coord_flip()
@@ -280,7 +284,9 @@ current_data |>
 # K Crosses for CD14
 
 current_data |>
-  filter(startsWith(type, "k_CD14_")) |>
+  filter(startsWith(type, "k_CD14_")  | endsWith(type, "_CD14"),
+         type != 'p_CD14',
+         type != 'k_CD14') |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_2))) +
   geom_boxplot() +
   coord_flip()
@@ -288,7 +294,9 @@ current_data |>
 # K Crosses for Other
 
 current_data |>
-  filter(startsWith(type, "k_Other_")) |>
+  filter(startsWith(type, "k_Other_")  | endsWith(type, "_Other"),
+         type != 'p_Other',
+         type != 'k_Other') |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_2))) +
   geom_boxplot() +
   coord_flip()
@@ -296,7 +304,9 @@ current_data |>
 # Last K Cross for CD19
 
 current_data |>
-  filter(startsWith(type, "k_CD19_")) |>
+  filter(startsWith(type, "k_CD19_")  | endsWith(type, "_CD19"),
+         type != 'p_CD19',
+         type != 'k_CD19') |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_2))) +
   geom_boxplot() +
   coord_flip()
@@ -327,4 +337,36 @@ ggsurvplot(km_fit, data = current_data)
 survdiff(Surv(survival_days, survival_status) ~ cluster_id_2, data= current_data, rho = 1)
 ```
 
+## Barplots
+
+```{r}
+current_data <- lung_meta40_hier
+
+current_data <- current_data |> select_if(~!is.numeric(.)) |>
+  mutate(stage_numeric = lung_meta40_hier$stage_numeric,
+         #Change based on which cluster
+         cluster_id = lung_meta40_hier$cluster_id_2) |>
+  select(-image_id, -patient_id, -cause_of_death, -stage_at_diagnosis) 
+
+current_data |>
+  select(cluster_id, gender) |>
+  ggplot(aes(x = factor(cluster_id), fill = gender)) +
+  geom_bar(position = 'dodge')
+
+current_data |>
+  select(cluster_id, mhcII_status) |>
+  ggplot(aes(x = factor(cluster_id), fill = mhcII_status)) +
+  geom_bar(position = 'dodge')
+
+current_data |>
+  select(cluster_id, adjuvant_therapy) |>
+  ggplot(aes(x = factor(cluster_id), fill = adjuvant_therapy)) +
+  geom_bar(position = 'dodge')
+
+current_data |>
+  select(cluster_id, stage_numeric) |>
+  ggplot(aes(x = factor(cluster_id), fill = factor(stage_numeric))) +
+  geom_bar(position = 'dodge')
+
+```
 
