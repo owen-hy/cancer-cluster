@@ -343,7 +343,8 @@ current_data |>
 
 current_data |>
   filter(!startsWith(type, "k_"), !startsWith(type, "p_"), 
-         type != "pack_years", type != 'age_at_diagnosis') |>
+         type != "pack_years", type != 'age_at_diagnosis',
+         type != 'cluster_id_3', type != 'cluster_id_2') |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
   geom_boxplot() +
   coord_flip()
@@ -358,7 +359,8 @@ current_data |>
 ## Survival Analysis 
 
 ```{r}
-current_data <- lung_meta40_hier
+current_data <- lung_meta40_hier |>
+  filter(cluster_id_4 != 3)
 
 km_fit <- survfit(Surv(survival_days, survival_status) ~ cluster_id_4, data = current_data)
 ggsurvplot(km_fit, data = current_data)
@@ -368,12 +370,13 @@ survdiff(Surv(survival_days, survival_status) ~ cluster_id_4, data= current_data
 ## Barplots
 
 ```{r}
-current_data <- lung_meta40_hier
+current_data <- lung_meta40_hier |>
+  filter(cluster_id_4 != 3)
 
 current_data <- current_data |> select_if(~!is.numeric(.)) |>
-  mutate(stage_numeric = lung_meta40_hier$stage_numeric,
+  mutate(stage_numeric = current_data$stage_numeric,
          #Change based on which cluster
-         cluster_id = lung_meta40_hier$cluster_id_4) |>
+         cluster_id = current_data$cluster_id_4) |>
   select(-image_id, -patient_id, -cause_of_death, -stage_at_diagnosis) 
 
 current_data |>
@@ -403,7 +406,8 @@ current_data |>
 recurrence_data <- lung_meta40_hier |>
   select(patient_id, survival_days, time_to_recurrence_days, cluster_id_4) |>
   mutate(recurrence = if_else(is.na(time_to_recurrence_days), 0, 1),
-         recurrence_days = if_else(is.na(time_to_recurrence_days), survival_days, time_to_recurrence_days)) 
+         recurrence_days = if_else(is.na(time_to_recurrence_days), survival_days, time_to_recurrence_days)) |>
+  filter(cluster_id_4 != 3)
 
 km_fit_rec <- survfit(Surv(recurrence_days, recurrence) ~ cluster_id_4, data = recurrence_data)
 ggsurvplot(km_fit_rec, data = recurrence_data, xlim = c(0,8500))
