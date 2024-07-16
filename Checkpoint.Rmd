@@ -262,7 +262,8 @@ current_data <- current_data[, sapply(current_data, is.numeric)] |>
   ## Change the cluster id if needed
   pivot_longer(cols = -cluster_id_4,
                names_to = "type",
-               values_to = "value") 
+               values_to = "value") |>
+  filter(cluster_id_4 != 3)
 
 current_data |>
   ggplot(aes(x = type, y = value, col = factor(cluster_id_4))) +
@@ -394,6 +395,19 @@ current_data |>
   select(cluster_id, stage_numeric) |>
   ggplot(aes(x = factor(cluster_id), fill = factor(stage_numeric))) +
   geom_bar(position = 'fill')
+
+```
+## Survival with Time to Recurrence
+
+```{r}
+recurrence_data <- lung_meta40_hier |>
+  select(patient_id, survival_days, time_to_recurrence_days, cluster_id_4) |>
+  mutate(recurrence = if_else(is.na(time_to_recurrence_days), 0, 1),
+         recurrence_days = if_else(is.na(time_to_recurrence_days), survival_days, time_to_recurrence_days)) 
+
+km_fit_rec <- survfit(Surv(recurrence_days, recurrence) ~ cluster_id_4, data = recurrence_data)
+ggsurvplot(km_fit_rec, data = recurrence_data, xlim = c(0,8500))
+survdiff(Surv(recurrence_days, recurrence) ~ cluster_id_4, data = recurrence_data, rho = 1)
 
 ```
 

@@ -15,6 +15,7 @@ current_data <- current_data[, sapply(current_data, is.numeric)] |>
 current_data |>
   ggplot(aes(x = type, y = value, col = factor(cluster_id_2))) +
   geom_boxplot() +
+  geom_violin() +
   coord_flip() #This is for all, but you can't really tell much
 
 ## Just Proportions
