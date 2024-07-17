@@ -401,7 +401,10 @@ current_data <- current_data |> select_if(~!is.numeric(.)) |>
 current_data |>
   select(cluster_id, gender) |>
   ggplot(aes(x = factor(cluster_id), fill = gender)) +
-  geom_bar(position = 'fill')
+  geom_bar(position = 'fill') +
+  scale_fill_discrete(name = "Gender") +
+  ggtitle("Proportions of Gender") +
+  labs(y = "Percentage", x = "cluster_id") + theme_bw()
 
 current_data |>
   select(cluster_id, mhcII_status) |>
@@ -416,7 +419,11 @@ current_data |>
 current_data |>
   select(cluster_id, stage_numeric) |>
   ggplot(aes(x = factor(cluster_id), fill = factor(stage_numeric))) +
-  geom_bar(position = 'fill')
+  geom_bar(position = 'fill') +
+  scale_fill_discrete(name = "Stage of Cancer") +
+  ggtitle("Proportions of Stage of Cancer") +
+  labs(y = "Percentage", x = "cluster_id") + theme_bw()
+  
 
 ```
 ## Survival with Time to Recurrence
