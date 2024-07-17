@@ -354,6 +354,25 @@ current_data |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
   geom_boxplot() +
   coord_flip()
+
+# pack years alone
+current_data %>% 
+  filter(type == "pack_years") %>% 
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) + 
+  geom_boxplot() + 
+  scale_fill_discrete(name = "cluster_id") + 
+  ggtitle("Distribution of Pack Years") +
+  labs(y = "Pack Years", x = " ") + theme_bw()
+
+# age alone
+current_data %>% 
+  filter(type == "age_at_diagnosis") %>% 
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) + 
+  geom_boxplot() + 
+  scale_fill_discrete(name = "cluster_id") + 
+  ggtitle("Distribution of Age at Diagnosis") +
+  labs(y = "Age", x = " ") + theme_bw()
+  
 ```
 
 ## Survival Analysis 
