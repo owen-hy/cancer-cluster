@@ -291,13 +291,13 @@ current_data |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
   geom_boxplot() 
 
-## K Crosses for CK
+## K Crosses for CK (WE ARE USING THIS)
 
 current_data |>
   filter(startsWith(type, "k_CK_")) |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
   geom_boxplot() +
-  coord_flip()
+  coord_flip() 
 
 ## K Crosses for CD8
 
@@ -423,6 +423,46 @@ autoplot(km_fit_rec, xlim = c(0, 5000))
 recurrence_data |>
   group_by(cluster_id_4) |>
   summarize(p_recurrence = sum(recurrence == 1) / n())
+
+```
+
+## Boxplots we end up using
+
+```{r}
+current_data <- lung_meta40_hier
+
+current_data <- current_data[, sapply(current_data, is.numeric)] |>
+  select(-X, -stage_numeric, -survival_status, -recurrence_or_lung_ca_death) |>
+  ## Change the cluster id if needed
+  pivot_longer(cols = -cluster_id_4,
+               names_to = "type",
+               values_to = "value") |>
+  filter(cluster_id_4 != 3)
+
+current_data |>
+  filter(startsWith(type, "k_CK_")) |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
+  geom_boxplot() +
+  coord_flip() +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme_bw() +
+  labs(title = "Observed K Cross - Permuted K Cross for CK cell interactions",
+       x = 'Difference',
+       y = 'Cell Interaction',
+       fill = 'Cluster')
+  
+current_data |>
+  filter(startsWith(type, "p_")) |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
+  geom_boxplot() +
+  coord_flip() +
+  theme_bw() +
+  labs(title = "Cell Proportions within Image",
+       x = 'Type of Cell',
+       y = 'Proportion within Image',
+       fill = 'Cluster') +
+  theme(plot.title = element_text(hjust = 0.5)) 
+  
 
 ```
 
