@@ -414,5 +414,9 @@ ggsurvplot(km_fit_rec, data = recurrence_data, xlim = c(0,8500))
 survdiff(Surv(recurrence_days, recurrence) ~ cluster_id_4, data = recurrence_data, rho = 1)
 autoplot(km_fit_rec, xlim = c(0, 5000))
 
+recurrence_data |>
+  group_by(cluster_id_4) |>
+  summarize(p_recurrence = sum(recurrence == 1) / n())
+
 ```
 
