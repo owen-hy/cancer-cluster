@@ -488,7 +488,20 @@ current_data |>
        y = 'Proportion within Image',
        fill = 'Cluster') +
   theme(plot.title = element_text(hjust = 0.5)) 
-  
+
+current_data |>
+  filter(startsWith(type, "k_CD8_") | endsWith(type, "_CD8"),
+         type != 'p_CD8',
+         type != 'k_CD8') |>
+  ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
+  geom_boxplot() +
+  coord_flip() +
+  theme_bw() +
+  labs(title = "Observed K Cross - Permuted K Cross for CD8 cell interactions",
+       x = 'Difference',
+       y = 'Cell Interaction',
+       fill = 'Cluster') +
+  theme(plot.title = element_text(hjust = 0.5)) 
 
 ```
 
