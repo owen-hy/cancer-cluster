@@ -473,8 +473,8 @@ current_data |>
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw() +
   labs(title = "Observed K Cross - Permuted K Cross for CK cell interactions",
-       x = 'Difference',
-       y = 'Cell Interaction',
+       x = 'Cell Interaction',
+       y = 'Difference',
        fill = 'Cluster')
   
 current_data |>
@@ -498,8 +498,8 @@ current_data |>
   coord_flip() +
   theme_bw() +
   labs(title = "Observed K Cross - Permuted K Cross for CD8 cell interactions",
-       x = 'Difference',
-       y = 'Cell Interaction',
+       x = 'Cell Interaction',
+       y = 'Difference',
        fill = 'Cluster') +
   theme(plot.title = element_text(hjust = 0.5)) 
 
