@@ -162,6 +162,19 @@ data <- lung_meta40_hier_4[, sapply(lung_meta40_hier_4, is.numeric)]
 cluster_meds_4 <- data |>
   group_by(as.integer(cluster_id_4)) |>
   summarize(across(everything(), median, na.rm = TRUE))
+
+colnames(lung_meta40_hier) <- c("X", "image_id", "patient_id", "gender", "mhcII_status", "age_at_diagnosis",
+                                "stage_at_diagnosis", "stage_numeric", "pack_years", "survival_days",
+                                "survival_status", "cause_of_death", "adjuvant_therapy",
+                                "time_to_recurrence_days", "recurrence_or_lung_ca_death", "total_cell",
+                                "p_Tumor", "p_CytotoxicT", "p_Macrophage", "p_Other", "p_BCell", "p_THelper",
+                                "k_Tumor", "k_CytotoxicT", "k_Macrophage", "k_Other", "k_BCell", "k_THelper",
+                                "k_Tumor_CytotoxicT", "k_Tumor_Macrophage", "k_Tumor_Other", "k_Tumor_BCell",
+                                "k_Tumor_THelper", "k_CytotoxicT_Macrophage", "k_CytotoxicT_Other", 
+                                "k_CytoxicT_BCell", "k_CytotoxicT_THelper", "k_Macrophage_Other", 
+                                "k_Macrophage_BCell", "k_Macrophage_THelper", "k_Other_BCell",
+                                "k_Other_THelper", "k_BCell_THelper", "cluster_id_2", "cluster_id_3",
+                                "cluster_id_4")
 ```
 Our next step will be to produce a heatmaps.
 
@@ -231,16 +244,15 @@ pheatmap(heat_df,
 
 ## 4 clusters
 file_plot <- lung_meta40_hier2 |>
-  select(-c(cluster_id_3, cluster_id_2)) |>
+  select(starts_with("k"), starts_with("p"), -pack_years, cluster_id_4) |>
   arrange(cluster_id_4) |>
-  mutate(new_cluster_id_4 = factor(cluster_id_4)) |>
+  mutate(cluster_id = factor(cluster_id_4)) |>
   select(-cluster_id_4)
-clust <- file_plot |> select(new_cluster_id_4)
+clust <- file_plot |> select(cluster_id)
 rownames(clust) = rownames(file_plot)
 heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
   scale() |>
   as.data.frame() |>
-  select(-X) |>
   as.matrix()
 rownames(heat_df) = rownames(clust)
 rownames(clust)
