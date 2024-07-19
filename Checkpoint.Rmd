@@ -469,6 +469,19 @@ recurrence_data |>
 ```{r}
 current_data <- lung_meta40_hier
 
+colnames(current_data) <- c("X", "image_id", "patient_id", "gender", "mhcII_status", "age_at_diagnosis",
+                                "stage_at_diagnosis", "stage_numeric", "pack_years", "survival_days",
+                                "survival_status", "cause_of_death", "adjuvant_therapy",
+                                "time_to_recurrence_days", "recurrence_or_lung_ca_death", "total_cell",
+                                "p_Tumor", "p_CytotoxicT", "p_Macrophage", "p_Other", "p_BCell", "p_THelper",
+                                "k_Tumor", "k_CytotoxicT", "k_Macrophage", "k_Other", "k_BCell", "k_THelper",
+                                "k_Tumor_CytotoxicT", "k_Tumor_Macrophage", "k_Tumor_Other", "k_Tumor_BCell",
+                                "k_Tumor_THelper", "k_CytotoxicT_Macrophage", "k_CytotoxicT_Other", 
+                                "k_CytotoxicT_BCell", "k_CytotoxicT_THelper", "k_Macrophage_Other", 
+                                "k_Macrophage_BCell", "k_Macrophage_THelper", "k_Other_BCell",
+                                "k_Other_THelper", "k_BCell_THelper", "cluster_id_2", "cluster_id_3",
+                                "cluster_id_4")
+
 current_data <- current_data[, sapply(current_data, is.numeric)] |>
   select(-X, -stage_numeric, -survival_status, -recurrence_or_lung_ca_death) |>
   ## Change the cluster id if needed
@@ -478,13 +491,13 @@ current_data <- current_data[, sapply(current_data, is.numeric)] |>
   filter(cluster_id_4 != 3)
 
 current_data |>
-  filter(startsWith(type, "k_CK_")) |>
+  filter(startsWith(type, "k_Tumor_")) |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
   geom_boxplot() +
   coord_flip() +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw() +
-  labs(title = "Observed K Cross - Permuted K Cross for CK cell interactions",
+  labs(title = "Observed K Cross - Permuted K Cross for Tumor cell interactions",
        x = 'Cell Interaction',
        y = 'Difference',
        fill = 'Cluster')
@@ -502,14 +515,14 @@ current_data |>
   theme(plot.title = element_text(hjust = 0.5)) 
 
 current_data |>
-  filter(startsWith(type, "k_CD8_") | endsWith(type, "_CD8"),
-         type != 'p_CD8',
-         type != 'k_CD8') |>
+  filter(startsWith(type, "k_CytotoxicT_") | endsWith(type, "_CytotoxicT"),
+         type != 'p_CytotoxicT',
+         type != 'k_CytotoxicT') |>
   ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
   geom_boxplot() +
   coord_flip() +
   theme_bw() +
-  labs(title = "Observed K Cross - Permuted K Cross for CD8 cell interactions",
+  labs(title = "Observed K Cross - Permuted K Cross for Cytotoxic T cell interactions",
        x = 'Cell Interaction',
        y = 'Difference',
        fill = 'Cluster') +
