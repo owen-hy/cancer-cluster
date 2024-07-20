@@ -99,13 +99,13 @@ hier_clust4 <- hcut(new_lung_meta40, k = 4)
 
 # View dendrogram and clusters
 ## 2 clusters
-plot(hier_clust2)
+plot(hier_clust2, cex = 0.6)
 rect.hclust(hier_clust2, k = 2)
 ## 3 clusters
-plot(hier_clust3)
+plot(hier_clust3, cex = 0.6)
 rect.hclust(hier_clust3, k = 3)
 ## 4 clusters
-plot(hier_clust4)
+plot(hier_clust4, cex = 0.6)
 rect.hclust(hier_clust4, k = 4)
 ## silhouette scores for hierarchical clustering
 fviz_silhouette(hier_clust2) # 0.11
