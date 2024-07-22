@@ -242,13 +242,14 @@ pheatmap(heat_df,
          clustering_method = "ward.D2")
 
 
-## 4 clusters
+## 4 clusters (One to use in final presentation)
 file_plot <- lung_meta40_hier2 |>
-  select(starts_with("k"), starts_with("p"), -pack_years, cluster_id_4) |>
+  select(starts_with("p"), starts_with("k"), -pack_years, cluster_id_4) |>
   arrange(cluster_id_4) |>
   mutate(cluster_id = factor(cluster_id_4)) |>
   select(-cluster_id_4)
-clust <- file_plot |> select(cluster_id)
+clust <- file_plot |> select(cluster_id) |>
+  rename('Cluster' = 'cluster_id')
 rownames(clust) = rownames(file_plot)
 heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
   scale() |>
@@ -256,10 +257,17 @@ heat_df <- file_plot[, sapply(file_plot, is.numeric)] |>
   as.matrix()
 rownames(heat_df) = rownames(clust)
 rownames(clust)
-pheatmap(heat_df, 
-         annotation_row = clust, 
-         cluster_cols = TRUE, 
-         cluster_rows = FALSE,
+colnames(heat_df) = c("Tumor Prop.", "Cytotoxic T Prop.", "Macrophage Prop.", "Other Prop.", "B Cell Prop.", "T Helper Prop.",
+                                "Tumor K", "Cytotoxic T K", "Macrophage K", "Other K", "B Cell K", "T Helper K",
+                                "Tumor x Cytotoxic T", "Tumor x Macrophage", "Tumor x Other", "Tumor x B Cell",
+                                "Tumor x T Helper", "Cytotoxic T x Macrophage", "Cytotoxic T x Other", 
+                                "Cytoxic T x B Cell", "Cytotoxic T x T Helper", "Macrophage x Other", 
+                                "Macrophage x B Cell", "Macrophage x T Helper", "Other x B Cell",
+                                "Other x T Helper", "B Cell x T Helper")
+pheatmap(t(heat_df), 
+         annotation_col = clust, 
+         cluster_cols = F, 
+         cluster_rows = T,
          clustering_method = "ward.D2")
 
 ```
