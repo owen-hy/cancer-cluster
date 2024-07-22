@@ -490,29 +490,42 @@ current_data <- current_data[, sapply(current_data, is.numeric)] |>
   pivot_longer(cols = -cluster_id_4,
                names_to = "type",
                values_to = "value") |>
-  filter(cluster_id_4 != 3)
+  filter(cluster_id_4 != 3) |>
+  rename('Cluster' = 'cluster_id_4')
 
 current_data |>
   filter(startsWith(type, "k_Tumor_")) |>
-  ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
+      mutate(type = case_when(type == 'k_Tumor_THelper' ~ 'Tumor x T Helper',
+                         type == 'k_Tumor_Other' ~ 'Tumor x Other',
+                          type == 'k_Tumor_Macrophage' ~ 'Tumor x Macrophage',
+                          type == 'k_Tumor_CytotoxicT' ~ 'Tumor x Cytotoxic T',
+                          type == 'k_Tumor_BCell' ~ 'Tumor x B Cell')) |>
+  ggplot(aes(x = type, y = value, fill = factor(Cluster))) +
   geom_boxplot() +
   coord_flip() +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw() +
-  labs(title = "Observed K Cross - Permuted K Cross for Tumor cell interactions",
+  labs(title = "Difference Between Observed and Permuted K Cross for Tumor Cell interactions",
        x = 'Cell Interaction',
        y = 'Difference',
-       fill = 'Cluster')
+       fill = 'Cluster') +
+  theme(plot.title = element_text(size = 11))
   
 current_data |>
   filter(startsWith(type, "p_")) |>
-  ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
+  mutate(type = case_when(type == 'p_Tumor' ~ 'Tumor',
+                          type == 'p_THelper' ~ 'T Helper',
+                          type == 'p_Other' ~ 'Other',
+                          type == 'p_Macrophage' ~ 'Macrophage',
+                          type == 'p_CytotoxicT' ~ 'Cytotoxic T',
+                          type == 'p_BCell' ~ 'B Cell')) |>
+  ggplot(aes(x = type, y = value, fill = factor(Cluster))) +
   geom_boxplot() +
   coord_flip() +
   theme_bw() +
   labs(title = "Cell Proportions within Image",
-       x = 'Type of Cell',
-       y = 'Proportion within Image',
+       x = 'Cell Type',
+       y = 'Proportion',
        fill = 'Cluster') +
   theme(plot.title = element_text(hjust = 0.5)) 
 
@@ -520,15 +533,21 @@ current_data |>
   filter(startsWith(type, "k_CytotoxicT_") | endsWith(type, "_CytotoxicT"),
          type != 'p_CytotoxicT',
          type != 'k_CytotoxicT') |>
-  ggplot(aes(x = type, y = value, fill = factor(cluster_id_4))) +
+    mutate(type = case_when(type == 'k_Tumor_CytotoxicT' ~ 'Cytotoxic T x Tumor',
+                         type == 'k_CytotoxicT_THelper' ~ 'Cytotoxic T x T Helper',
+                          type == 'k_CytotoxicT_Other' ~ 'Cytotoxic T x Other',
+                          type == 'k_CytotoxicT_Macrophage' ~ 'Cytotoxic T x Macrophage',
+                          type == 'k_CytotoxicT_BCell' ~ 'Cytotoxic T x B Cell')) |>
+  ggplot(aes(x = type, y = value, fill = factor(Cluster))) +
   geom_boxplot() +
   coord_flip() +
   theme_bw() +
-  labs(title = "Observed K Cross - Permuted K Cross for Cytotoxic T cell interactions",
+  labs(title = "Difference Between Observed and Permuted K Cross for Cytotoxic T Cell interactions",
        x = 'Cell Interaction',
        y = 'Difference',
        fill = 'Cluster') +
-  theme(plot.title = element_text(hjust = 0.5)) 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(plot.title = element_text(size = 11))
 
 ```
 
