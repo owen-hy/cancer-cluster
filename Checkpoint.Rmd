@@ -465,7 +465,7 @@ ggsurv$plot +
   labs(title = 'Kaplan-Meier Curve for Cancer Recurrence') +
   theme(plot.title = element_text(hjust = 0.5))
 
-survdiff(Surv(recurrence_days, recurrence) ~ Cluster, data = recurrence_data, rho = 1)
+survdiff(Surv(recurrence_days, recurrence) ~ Cluster, data = recurrence_data, rho = 0)
 autoplot(km_fit_rec, xlim = c(0, 5000))
 
 recurrence_data |>
