@@ -457,11 +457,11 @@ recurrence_data <- lung_meta40_hier |>
   rename('Cluster' = 'cluster_id_4')
 
 km_fit_rec <- survfit(Surv(recurrence_days, recurrence) ~ Cluster, data = recurrence_data)
-ggsurv <- ggsurvplot(km_fit_rec, data = recurrence_data, xlim = c(0,8000), 
+ggsurv <- ggsurvplot(km_fit_rec, data = recurrence_data, xlim = c(0,4500), 
                      ylab = 'Non-Recurrence Probability',
                      xlab = 'Time (Days)')
 ggsurv$plot +
-  scale_x_continuous(breaks = seq(0, 8000, by = 1000)) +
+  scale_x_continuous(breaks = seq(0, 4500, by = 1000)) +
   labs(title = 'Kaplan-Meier Curve for Cancer Recurrence') +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5)) 
@@ -516,7 +516,7 @@ current_data |>
   theme(plot.title = element_text(hjust = 0.5)) +
   theme_bw() +
   labs(title = "Difference Between Observed and Permuted K Cross for Tumor Cell interactions",
-       x = 'Cell Interaction',
+       x = 'Cell Spatial Interaction',
        y = 'Difference',
        fill = 'Cluster') +
   theme(plot.title = element_text(size = 11))
@@ -553,7 +553,7 @@ current_data |>
   coord_flip() +
   theme_bw() +
   labs(title = "Difference Between Observed and Permuted K Cross for Cytotoxic T Cell interactions",
-       x = 'Cell Interaction',
+       x = 'Cell Spatial Interaction',
        y = 'Difference',
        fill = 'Cluster') +
   theme(plot.title = element_text(hjust = 0.5)) +
