@@ -11,6 +11,9 @@ num_file <- current_file |>
 ## Change if using ovarian
 image_name <- num_file$image_id
 
+current_file <- current_file |>
+  filter(image_id %in% image_name)
+
 num_mat <- num_file |>
   select(-image_id) |>
   scale() |>
